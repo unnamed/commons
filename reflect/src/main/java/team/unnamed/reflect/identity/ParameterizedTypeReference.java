@@ -1,10 +1,13 @@
-package identity;
+package team.unnamed.reflect.identity;
+
+import team.unnamed.reflect.identity.resolve.ContextualTypes;
+import team.unnamed.validate.Filters;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-class ParameterizedTypeReference implements ParameterizedType {
+class ParameterizedTypeReference implements ParameterizedType, CompositeType {
 
     private final Type ownerType;
     private final Type rawType;
@@ -39,6 +42,13 @@ class ParameterizedTypeReference implements ParameterizedType {
     @Override
     public Type getOwnerType() {
         return ownerType;
+    }
+
+    @Override
+    public boolean requiresContext() {
+        return (ownerType != null && ContextualTypes.requiresContext(ownerType))
+                || ContextualTypes.requiresContext(rawType)
+                || Filters.any(typeArguments, ContextualTypes::requiresContext);
     }
 
     @Override

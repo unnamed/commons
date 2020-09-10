@@ -1,5 +1,9 @@
-package identity;
+package team.unnamed.reflect.identity.resolve;
 
+import team.unnamed.reflect.identity.CompositeType;
+import team.unnamed.reflect.identity.TypeReference;
+import team.unnamed.reflect.identity.TypeResolver;
+import team.unnamed.reflect.identity.Types;
 import team.unnamed.validate.Validate;
 
 import java.lang.reflect.*;
@@ -7,6 +11,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Collection of util methods for contextually
+ * handling of types.
+ */
 public final class ContextualTypes {
 
     private static final Map<Class<?>, TypeResolver> TYPE_RESOLVER_MAP;
@@ -24,6 +32,30 @@ public final class ContextualTypes {
 
     private ContextualTypes() {
         throw new UnsupportedOperationException("This class couldn't be instantiated!");
+    }
+
+    /**
+     * Checks if the given type requires a context to be
+     * fully specified.
+     * @param type The checked type.
+     * @return True if the type requires a context to
+     * be fully specified.
+     */
+    public static boolean requiresContext(Type type) {
+
+        Validate.notNull(type, "type");
+
+        if (type instanceof Class) {
+            return false;
+        } else if (type instanceof CompositeType) {
+            return ((CompositeType) type).requiresContext();
+        } else if (type instanceof TypeVariable) {
+            return true;
+        } else {
+            Type wrapped = Types.wrap(type);
+            Validate.state(wrapped instanceof CompositeType); // wtf bro this isn't possible
+            return ((CompositeType) wrapped).requiresContext();
+        }
     }
 
     public static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
@@ -72,6 +104,12 @@ public final class ContextualTypes {
 
     }
 
+    /**
+     * Resolves the type contextually.
+     * @param context The context
+     * @param type The possibly non-fully-specified type
+     * @return A fully specified type
+     */
     public static Type resolveContextually(TypeReference<?> context, Type type) {
 
         Validate.notNull(context);

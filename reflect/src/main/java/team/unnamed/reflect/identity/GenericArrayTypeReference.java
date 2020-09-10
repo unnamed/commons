@@ -1,10 +1,17 @@
-package identity;
+package team.unnamed.reflect.identity;
+
+import team.unnamed.reflect.identity.resolve.ContextualTypes;
+import team.unnamed.validate.Validate;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-class GenericArrayTypeReference implements GenericArrayType {
+/**
+ * GenericArrayType represents an array type
+ * whose component type is either a parameterized type or a type variable.
+ */
+class GenericArrayTypeReference implements GenericArrayType, CompositeType {
 
     private final Type componentType;
 
@@ -13,12 +20,18 @@ class GenericArrayTypeReference implements GenericArrayType {
     }
 
     GenericArrayTypeReference(Type componentType) {
+        Validate.notNull(componentType);
         this.componentType = Types.wrap(componentType);
     }
 
     @Override
     public Type getGenericComponentType() {
-        return componentType;
+        return this.componentType;
+    }
+
+    @Override
+    public boolean requiresContext() {
+        return ContextualTypes.requiresContext(componentType);
     }
 
     @Override

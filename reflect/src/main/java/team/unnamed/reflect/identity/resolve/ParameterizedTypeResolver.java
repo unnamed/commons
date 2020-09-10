@@ -1,20 +1,20 @@
-package identity;
+package team.unnamed.reflect.identity.resolve;
 
-import team.unnamed.inject.identity.type.ContextualTypes;
-import team.unnamed.inject.identity.type.TypeReference;
-import team.unnamed.inject.identity.type.Types;
+import team.unnamed.reflect.identity.TypeReference;
+import team.unnamed.reflect.identity.TypeResolver;
+import team.unnamed.reflect.identity.Types;
+import team.unnamed.validate.Validate;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-
-import static team.unnamed.inject.internal.Preconditions.checkState;
 
 public class ParameterizedTypeResolver implements TypeResolver {
 
     @Override
     public Type resolveType(TypeReference<?> context, Type type) {
 
-        checkState(type instanceof ParameterizedType, "Type isn't instance of ParameterizedType!");
+        Validate.argument(type instanceof ParameterizedType,
+                "Type isn't instance of ParameterizedType!");
 
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type ownerType = parameterizedType.getOwnerType();

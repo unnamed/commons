@@ -1,5 +1,8 @@
-package identity;
+package team.unnamed.reflect.identity.resolve;
 
+import team.unnamed.reflect.identity.TypeReference;
+import team.unnamed.reflect.identity.TypeResolver;
+import team.unnamed.reflect.identity.Types;
 import team.unnamed.validate.Validate;
 
 import java.lang.reflect.Type;

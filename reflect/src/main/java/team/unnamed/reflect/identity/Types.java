@@ -1,11 +1,15 @@
-package identity;
+package team.unnamed.reflect.identity;
+
+import team.unnamed.validate.Validate;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static team.unnamed.inject.internal.Preconditions.checkNotNull;
-
+/**
+ * Collection of static util methods for easy
+ * Type handling.
+ */
 public final class Types {
 
     public static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
@@ -14,7 +18,16 @@ public final class Types {
         throw new UnsupportedOperationException("This class couldn't be instantiated!");
     }
 
+    /**
+     * Converts the given type to a resolvable type.
+     * If the type isn't a raw type, the return type
+     * is a {@link CompositeType}.
+     * @param type The original type
+     * @return The wrapped type
+     */
     public static Type wrap(Type type) {
+
+        Validate.notNull(type, "type");
 
         if (type instanceof Class) {
             Class<?> clazz = (Class<?>) type;
@@ -24,19 +37,15 @@ public final class Types {
                 );
             }
             return clazz;
-        }
-
-        if (type instanceof ParameterizedType) {
+        } else if (type instanceof CompositeType) {
+            return type;
+        } else if (type instanceof ParameterizedType) {
             ParameterizedType prototype = (ParameterizedType) type;
             return new ParameterizedTypeReference(prototype);
-        }
-
-        if (type instanceof GenericArrayType) {
+        } else if (type instanceof GenericArrayType) {
             GenericArrayType prototype = (GenericArrayType) type;
             return new GenericArrayTypeReference(prototype);
-        }
-
-        if (type instanceof WildcardType) {
+        } else if (type instanceof WildcardType) {
             WildcardType prototype = (WildcardType) type;
             return new WildcardTypeReference(prototype);
         }
@@ -44,50 +53,50 @@ public final class Types {
         return type;
     }
 
+    /**
+     * Returns the raw type of the given generic (or not) type
+     * @param type The type.
+     * @return The generic type of the type.
+     */
     public static Class<?> getRawType(Type type) {
 
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        }
+        Validate.notNull(type, "type");
 
-        if (type instanceof ParameterizedType) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
-
             if (!(rawType instanceof Class)) {
+                // wait, that's illegal
                 throw new IllegalArgumentException("Raw type isn't a Class!");
             }
-
             return (Class<?>) rawType;
-        }
-
-        if (type instanceof GenericArrayType) {
+        } else if (type instanceof GenericArrayType) {
             Type componentType = ((GenericArrayType)type).getGenericComponentType();
             return Array.newInstance(getRawType(componentType), 0).getClass();
-        }
-
-        if (type instanceof TypeVariable) {
+        } else if (type instanceof TypeVariable) {
             return Object.class;
-        }
-
-        if (type instanceof WildcardType) {
+        } else if (type instanceof WildcardType) {
             return getRawType(((WildcardType) type).getUpperBounds()[0]);
         }
 
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Checks if the given types are equal.
+     * @param a The checked type 1
+     * @param b The checked type 2
+     * @return True if the given types are equal
+     */
     public static boolean typeEquals(Type a, Type b) {
 
         if (a == b) {
             return true;
-        }
-
-        if (a instanceof Class) {
+        } else if (a instanceof Class) {
             return a.equals(b);
-        }
-
-        if (a instanceof ParameterizedType) {
+        } else if (a instanceof ParameterizedType) {
 
             if (!(b instanceof ParameterizedType)) {
                 return false;
@@ -103,9 +112,7 @@ public final class Types {
                     && pa.getRawType().equals(pb.getRawType())
                     && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
 
-        }
-
-        if (a instanceof GenericArrayType) {
+        } else if (a instanceof GenericArrayType) {
             if (!(b instanceof GenericArrayType)) {
                 return false;
             }
@@ -113,9 +120,7 @@ public final class Types {
             GenericArrayType ga = (GenericArrayType) a;
             GenericArrayType gb = (GenericArrayType) b;
             return typeEquals(ga.getGenericComponentType(), gb.getGenericComponentType());
-        }
-
-        if (a instanceof WildcardType) {
+        } else if (a instanceof WildcardType) {
             if (!(b instanceof WildcardType)) {
                 return false;
             }
@@ -125,9 +130,7 @@ public final class Types {
             return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds())
                     && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
 
-        }
-
-        if (a instanceof TypeVariable) {
+        } else if (a instanceof TypeVariable) {
 
             if (!(b instanceof TypeVariable)) {
                 return false;
@@ -138,33 +141,36 @@ public final class Types {
 
             return va.getGenericDeclaration() == vb.getGenericDeclaration()
                     && va.getName().equals(vb.getName());
-
         }
 
         return false;
     }
 
+    /**
+     * Converts the given type of the string, if the given type
+     * is an string, returns the class name. If the given type
+     * is a generic type, uses {@link Type#toString} to get the
+     * type as a string.
+     * @param type The type
+     * @return The type converted to string
+     */
     public static String asString(Type type) {
         return type instanceof Class ? ((Class<?>) type).getName() : type.toString();
     }
 
     public static GenericArrayType genericArrayTypeOf(Type type) {
-        checkNotNull(type);
         return new GenericArrayTypeReference(type);
     }
 
     public static ParameterizedType parameterizedTypeOf(Type ownerType, Type rawType, Type... parameterTypes) {
-        checkNotNull(rawType);
         return new ParameterizedTypeReference(ownerType, rawType, parameterTypes);
     }
 
     public static WildcardType wildcardSuperTypeOf(Type type) {
-        checkNotNull(type);
         return new WildcardTypeReference(new Type[] { Object.class }, new Type[] { type });
     }
 
     public static WildcardType wildcardSubTypeOf(Type type) {
-        checkNotNull(type);
         return new WildcardTypeReference(new Type[] { type }, EMPTY_TYPE_ARRAY);
     }
 
