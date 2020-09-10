@@ -9,6 +9,14 @@
     <packaging>pom</packaging>
     <version>0.1.0</version>
 
+    <distributionManagement>
+        <repository>
+            <id>unnamed-releases</id>
+            <name>Unnamed Releases</name>
+            <url>https://repo.unnamed.team/repository/unnamed-releases</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
