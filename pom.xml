@@ -33,6 +33,7 @@
     <modules>
         <module>validation</module>
         <module>reflect</module>
+        <module>error</module>
     </modules>
 
 </project>
