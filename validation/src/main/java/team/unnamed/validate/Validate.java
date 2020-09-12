@@ -79,13 +79,16 @@ public final class Validate {
      * with the specified message.
      * @param object The checked object
      * @param message The exception message
+     * @param parameters Parameters for the message,
+     *                   message is formatted using
+     *                   {@link String#format}.
      * @param <T> The type of the checked object
      * @throws NullPointerException if object is null
      * @return The object, never null
      */
-    public static <T> T notNull(T object, String message) {
+    public static <T> T notNull(T object, String message, Object... parameters) {
         if (object == null) {
-            throw new NullPointerException(message);
+            throw new NullPointerException(String.format(message, parameters));
         } else {
             return object;
         }
@@ -109,11 +112,14 @@ public final class Validate {
      * with the specified message.
      * @param expression The checked expression
      * @param message The message for the thrown exception
+     * @param parameters The parameters for the exception
+     *                   message. The message is formatted
+     *                   using {@link String#format}.
      * @throws IllegalStateException If expression is false
      */
-    public static void state(boolean expression, String message) {
+    public static void state(boolean expression, String message, Object... parameters) {
         if (!expression) {
-            throw new IllegalStateException(message);
+            throw new IllegalStateException(String.format(message, parameters));
         }
     }
 
@@ -133,11 +139,14 @@ public final class Validate {
      * with the specified message
      * @param expression The checked expression
      * @param message The message for the thrown exception
+     * @param parameters The parameters for the exception
+     *                   message. The message is formatted
+     *                   using {@link String#format}.
      * @throws IllegalArgumentException If expression is false
      */
-    public static void argument(boolean expression, String message) {
+    public static void argument(boolean expression, String message, Object... parameters) {
         if (!expression) {
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format(message, parameters));
         }
     }
 
@@ -159,15 +168,18 @@ public final class Validate {
      * {@link IllegalArgumentException}.
      * @param string The checked string
      * @param message The message used for the messages
+     * @param parameters The parameters for the exception
+     *                   message. The message is formatted
+     *                   using {@link String#format}.
      * @throws NullPointerException if the string is null
      * @throws IllegalArgumentException If the string is empty
      * @return The string, not null and not empty
      */
-    public static String notEmpty(String string, String message) {
+    public static String notEmpty(String string, String message, Object... parameters) {
         if (string == null) {
-            throw new NullPointerException(message);
+            throw new NullPointerException(String.format(message, parameters));
         } else if (string.isEmpty()) {
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format(message, parameters));
         }
         return string;
     }
