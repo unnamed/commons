@@ -7,7 +7,7 @@
     <groupId>team.unnamed.common</groupId>
     <artifactId>common-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <distributionManagement>
         <repository>
@@ -34,7 +34,6 @@
         <module>validation</module>
         <module>reflect</module>
         <module>error</module>
-        <module>promise</module>
     </modules>
 
 </project>
