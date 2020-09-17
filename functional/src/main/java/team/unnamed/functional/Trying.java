@@ -6,115 +6,153 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface Trying<T> {
+public class Trying<T> {
 
-    Optional<T> getIfSuccess();
+  private static final Object PRESENT = new Object();
+  private static final Trying<?> SUCCESS = new Trying<>(PRESENT, null);
+  private static final Trying<?> FAILURE = new Trying<>(null, PRESENT);
 
-    Optional<Throwable> getIfFailure();
+  private final Object value;
+  private final Object failCause;
 
-    boolean isSuccess();
+  private Trying(Object value, Object failCause) {
+    Validate.argument(value == null ^ failCause == null,
+        "The response cannot be created if it has not failed and " +
+            "has not completed, or if it has failed and at the same time " +
+            "the operation has completed successfully,");
+    this.value = value;
+    this.failCause = failCause;
+  }
 
-    boolean isFailure();
+  public Optional<T> getIfSuccess() {
+    return Optional.ofNullable(getValueOrNull());
+  }
 
-    @SuppressWarnings("unchecked")
-    default Trying<T> orElse(Trying<? extends T> other) {
-        return isSuccess() ? this : (Trying<T>) Validate.notNull(other, "Other can not be null");
+  public Optional<Throwable> getIfFailure() {
+    if (failCause instanceof Throwable) {
+      return Optional.of((Throwable) failCause);
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  public boolean isSuccess() {
+    return value != null;
+  }
+
+  public boolean isFailure() {
+    return failCause != null;
+  }
+
+  public T orElse(T other) {
+    return getIfSuccess().orElse(other);
+  }
+
+  @SuppressWarnings("unchecked")
+  private T getValueOrNull() {
+    Object valueOrNull = value == PRESENT ? null : value;
+    if (valueOrNull == null) {
+      return null;
+    } else {
+      return (T) valueOrNull;
+    }
+  }
+
+  public Trying<? super T> orElse(Trying<? super T> other) {
+    Validate.notNull(other, "Other cannot be null");
+    return isSuccess() ? this : other;
+  }
+
+  /**
+   * Executes the specified action if the response
+   * was completed exceptionally
+   * @see Trying#isFailure()
+   * @param action The executed action
+   * @return The same response, for a fluent-api
+   */
+  public Trying<T> ifFailure(Consumer<? super Throwable> action) {
+
+    Validate.notNull(action, "Action cannot be null");
+    Optional<Throwable> cause = getIfFailure();
+
+    if (isFailure()) {
+      action.accept(cause.orElse(null));
     }
 
-    default Trying<T> ifFailure(Consumer<? super Throwable> action) {
-        Optional<Throwable> cause = getIfFailure();
+    return this;
+  }
 
-        if (isFailure() && cause.isPresent()) {
-            Validate.notNull(action, "Action can not be null").accept(cause.get());
-        }
+  /**
+   * Executes the specified action if the response
+   * was completed successfully
+   * @see Trying#isSuccess()
+   * @param action The executed action
+   * @return The same response, for a fluent-api
+   */
+  public Trying<T> ifSuccess(Consumer<? super T> action) {
 
-        return this;
+    Validate.notNull(action, "Action cannot be null");
+
+    if (isSuccess()) {
+      action.accept(getValueOrNull());
     }
 
-    default Trying<T> ifSuccess(Consumer<? super T> action) {
-        Optional<T> value = getIfSuccess();
+    return this;
+  }
 
-        if (isSuccess() && value.isPresent()) {
-            Validate.notNull(action, "Action can not be null").accept(value.get());
-        }
-
-        return this;
+  /**
+   * Executes immediately the specified supplier, catches
+   * any exception. If the supplier is executed successfully,
+   * returns a completed {@linkplain Trying}, using {@link Trying#success}
+   * passing the result of <code>supplier.get()</code>. If
+   * the supplier results in an {@link Exception} being
+   * thrown, the returned {@linkplain Trying} is created
+   * using {@link Trying#failure(Throwable)} passing the
+   * exception as the cause
+   *
+   * @param supplier The evaluated operation
+   * @param <T>      The expected operation return type
+   * @return The operation result
+   */
+  public static <T> Trying<T> of(Supplier<? extends T> supplier) {
+    Validate.notNull(supplier, "Supplier can not be null");
+    try {
+      return success(supplier.get());
+    } catch (Throwable throwable) {
+      return failure(throwable);
     }
+  }
 
-    static <T> Trying<T> of(Supplier<? extends T> supplier) {
-        try {
-            return success(Validate.notNull(supplier, "Supplier can not be null").get());
-        } catch (Throwable throwable) {
-            return failure(throwable);
-        }
-    }
+  /**
+   * Returns a Trying that's immediately completed, if the
+   * specified value is null, casts {@link Trying#SUCCESS}
+   * to the expected operation return type. If the
+   * value isn't null, returns a new {@linkplain Trying}
+   * passing a null error cause and the specified value
+   *
+   * @param value The result value
+   * @param <T>   The expected return type of an operation
+   * @return The operation response
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Trying<T> success(T value) {
+    return value == null ? (Trying<T>) SUCCESS : new Trying<>(value, null);
+  }
 
-    static <T> Trying<T> success(T value) {
-        return new Success<>(Validate.notNull(value, "Value can not be null"));
-    }
-
-    static <T> Trying<T> failure(Throwable cause) {
-        return new Failure<>(cause);
-    }
-
-    final class Success<T> implements Trying<T> {
-
-        private final T value;
-
-        public Success(T value) {
-            this.value = value;
-        }
-
-        @Override
-        public Optional<T> getIfSuccess() {
-            return Optional.ofNullable(value);
-        }
-
-        @Override
-        public Optional<Throwable> getIfFailure() {
-            return Optional.empty();
-        }
-
-        @Override
-        public boolean isSuccess() {
-            return true;
-        }
-
-        @Override
-        public boolean isFailure() {
-            return false;
-        }
-
-    }
-
-    final class Failure<T> implements Trying<T> {
-
-        private final Throwable cause;
-
-        public Failure(Throwable cause) {
-            this.cause = cause;
-        }
-
-        @Override
-        public Optional<T> getIfSuccess() {
-            return Optional.empty();
-        }
-
-        @Override
-        public Optional<Throwable> getIfFailure() {
-            return Optional.ofNullable(cause);
-        }
-
-        @Override
-        public boolean isSuccess() {
-            return false;
-        }
-
-        @Override
-        public boolean isFailure() {
-            return true;
-        }
-
-    }
+  /**
+   * Returns a Trying that immediately fails, if the
+   * specified cause is null, casts {@link Trying#FAILURE}
+   * to the expected operation return type. If the
+   * exception isn't null, returns a new {@linkplain Trying}
+   * passing a null value and the specified cause
+   *
+   * @param cause The cause for the failed result
+   * @param <T>   The expected return type of an operation
+   * @return The operation response
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Trying<T> failure(Throwable cause) {
+    return cause == null ? (Trying<T>) FAILURE : new Trying<>(null, cause);
+  }
 
 }
