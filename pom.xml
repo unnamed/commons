@@ -34,6 +34,7 @@
         <module>validation</module>
         <module>reflect</module>
         <module>error</module>
+        <module>functional</module>
     </modules>
 
 </project>
