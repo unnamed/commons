@@ -9,74 +9,74 @@ import java.util.Arrays;
 
 class ParameterizedTypeReference implements ParameterizedType, CompositeType {
 
-    private final Type ownerType;
-    private final Type rawType;
-    private final Type[] typeArguments;
+  private final Type ownerType;
+  private final Type rawType;
+  private final Type[] typeArguments;
 
-    ParameterizedTypeReference(ParameterizedType prototype) {
-        this(prototype.getOwnerType(), prototype.getRawType(), prototype.getActualTypeArguments());
+  ParameterizedTypeReference(ParameterizedType prototype) {
+    this(prototype.getOwnerType(), prototype.getRawType(), prototype.getActualTypeArguments());
+  }
+
+  ParameterizedTypeReference(Type ownerType, Type rawType, Type... typeArguments) {
+
+    this.ownerType = ownerType == null ? null : Types.wrap(ownerType);
+    this.rawType = Types.wrap(rawType);
+    this.typeArguments = typeArguments.clone();
+
+    for (int t = 0, length = this.typeArguments.length; t < length; t++) {
+      this.typeArguments[t] = Types.wrap(this.typeArguments[t]);
     }
 
-    ParameterizedTypeReference(Type ownerType, Type rawType, Type... typeArguments) {
+  }
 
-        this.ownerType = ownerType == null ? null : Types.wrap(ownerType);
-        this.rawType = Types.wrap(rawType);
-        this.typeArguments = typeArguments.clone();
+  @Override
+  public Type[] getActualTypeArguments() {
+    return typeArguments.clone();
+  }
 
-        for (int t = 0, length = this.typeArguments.length; t < length; t++) {
-            this.typeArguments[t] = Types.wrap(this.typeArguments[t]);
-        }
+  @Override
+  public Type getRawType() {
+    return rawType;
+  }
 
+  @Override
+  public Type getOwnerType() {
+    return ownerType;
+  }
+
+  @Override
+  public boolean requiresContext() {
+    return (ownerType != null && ContextualTypes.requiresContext(ownerType))
+        || ContextualTypes.requiresContext(rawType)
+        || Filters.any(typeArguments, ContextualTypes::requiresContext);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof ParameterizedType
+        && Types.typeEquals(this, (ParameterizedType) other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(typeArguments)
+        ^ rawType.hashCode()
+        ^ (ownerType == null ? 0 : ownerType.hashCode());
+  }
+
+  @Override
+  public String toString() {
+    int length = typeArguments.length;
+    if (length == 0) {
+      return Types.asString(rawType);
     }
 
-    @Override
-    public Type[] getActualTypeArguments() {
-        return typeArguments.clone();
+    StringBuilder stringBuilder = new StringBuilder(30 * (length + 1));
+    stringBuilder.append(Types.asString(rawType)).append("<").append(Types.asString(typeArguments[0]));
+    for (int i = 1; i < length; i++) {
+      stringBuilder.append(", ").append(Types.asString(typeArguments[i]));
     }
-
-    @Override
-    public Type getRawType() {
-        return rawType;
-    }
-
-    @Override
-    public Type getOwnerType() {
-        return ownerType;
-    }
-
-    @Override
-    public boolean requiresContext() {
-        return (ownerType != null && ContextualTypes.requiresContext(ownerType))
-                || ContextualTypes.requiresContext(rawType)
-                || Filters.any(typeArguments, ContextualTypes::requiresContext);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof ParameterizedType
-                && Types.typeEquals(this, (ParameterizedType) other);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(typeArguments)
-                ^ rawType.hashCode()
-                ^ (ownerType == null ? 0 : ownerType.hashCode());
-    }
-
-    @Override
-    public String toString() {
-        int length = typeArguments.length;
-        if (length == 0) {
-            return Types.asString(rawType);
-        }
-
-        StringBuilder stringBuilder = new StringBuilder(30 * (length + 1));
-        stringBuilder.append(Types.asString(rawType)).append("<").append(Types.asString(typeArguments[0]));
-        for (int i = 1; i < length; i++) {
-            stringBuilder.append(", ").append(Types.asString(typeArguments[i]));
-        }
-        return stringBuilder.append(">").toString();
-    }
+    return stringBuilder.append(">").toString();
+  }
 
 }

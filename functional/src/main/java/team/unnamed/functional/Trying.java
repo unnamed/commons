@@ -66,9 +66,10 @@ public class Trying<T> {
   /**
    * Executes the specified action if the response
    * was completed exceptionally
-   * @see Trying#isFailure()
+   *
    * @param action The executed action
    * @return The same response, for a fluent-api
+   * @see Trying#isFailure()
    */
   public Trying<T> ifFailure(Consumer<? super Throwable> action) {
 
@@ -85,9 +86,10 @@ public class Trying<T> {
   /**
    * Executes the specified action if the response
    * was completed successfully
-   * @see Trying#isSuccess()
+   *
    * @param action The executed action
    * @return The same response, for a fluent-api
+   * @see Trying#isSuccess()
    */
   public Trying<T> ifSuccess(Consumer<? super T> action) {
 

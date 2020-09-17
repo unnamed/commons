@@ -8,10 +8,10 @@ import java.lang.reflect.TypeVariable;
  */
 public interface CompositeType {
 
-    /**
-     * @return True if this composite type
-     * contains a {@link TypeVariable}
-     */
-    boolean requiresContext();
+  /**
+   * @return True if this composite type
+   * contains a {@link TypeVariable}
+   */
+  boolean requiresContext();
 
 }

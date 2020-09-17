@@ -10,20 +10,20 @@ import java.lang.reflect.Type;
 
 public class GenericArrayResolver implements TypeResolver {
 
-    @Override
-    public Type resolveType(TypeReference<?> context, Type type) {
+  @Override
+  public Type resolveType(TypeReference<?> context, Type type) {
 
-        Validate.argument(type instanceof GenericArrayType,
-                "Type isn't an instance of GenericArrayType!");
+    Validate.argument(type instanceof GenericArrayType,
+        "Type isn't an instance of GenericArrayType!");
 
-        Type componentType = ((GenericArrayType) type).getGenericComponentType();
-        Type resolvedComponentType = ContextualTypes.resolveContextually(context, componentType);
+    Type componentType = ((GenericArrayType) type).getGenericComponentType();
+    Type resolvedComponentType = ContextualTypes.resolveContextually(context, componentType);
 
-        if (componentType == resolvedComponentType) {
-            return type;
-        }
-
-        return Types.genericArrayTypeOf(resolvedComponentType);
+    if (componentType == resolvedComponentType) {
+      return type;
     }
+
+    return Types.genericArrayTypeOf(resolvedComponentType);
+  }
 
 }

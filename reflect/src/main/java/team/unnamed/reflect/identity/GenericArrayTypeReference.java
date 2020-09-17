@@ -13,47 +13,47 @@ import java.util.Objects;
  */
 class GenericArrayTypeReference implements GenericArrayType, CompositeType {
 
-    private final Type componentType;
+  private final Type componentType;
 
-    GenericArrayTypeReference(GenericArrayType prototype) {
-        this(prototype.getGenericComponentType());
-    }
+  GenericArrayTypeReference(GenericArrayType prototype) {
+    this(prototype.getGenericComponentType());
+  }
 
-    GenericArrayTypeReference(Type componentType) {
-        Validate.notNull(componentType);
-        this.componentType = Types.wrap(componentType);
-    }
+  GenericArrayTypeReference(Type componentType) {
+    Validate.notNull(componentType);
+    this.componentType = Types.wrap(componentType);
+  }
 
-    @Override
-    public Type getGenericComponentType() {
-        return this.componentType;
-    }
+  @Override
+  public Type getGenericComponentType() {
+    return this.componentType;
+  }
 
-    @Override
-    public boolean requiresContext() {
-        return ContextualTypes.requiresContext(componentType);
-    }
+  @Override
+  public boolean requiresContext() {
+    return ContextualTypes.requiresContext(componentType);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof GenericArrayType)) {
-            return false;
-        }
-        GenericArrayType other = (GenericArrayType) o;
-        return Types.typeEquals(this, other);
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
     }
+    if (!(o instanceof GenericArrayType)) {
+      return false;
+    }
+    GenericArrayType other = (GenericArrayType) o;
+    return Types.typeEquals(this, other);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(componentType);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(componentType);
+  }
 
-    @Override
-    public String toString() {
-        return Types.asString(componentType) + "[]";
-    }
+  @Override
+  public String toString() {
+    return Types.asString(componentType) + "[]";
+  }
 
 }

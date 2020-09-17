@@ -10,43 +10,43 @@ import java.lang.reflect.Type;
 
 public class ParameterizedTypeResolver implements TypeResolver {
 
-    @Override
-    public Type resolveType(TypeReference<?> context, Type type) {
+  @Override
+  public Type resolveType(TypeReference<?> context, Type type) {
 
-        Validate.argument(type instanceof ParameterizedType,
-                "Type isn't instance of ParameterizedType!");
+    Validate.argument(type instanceof ParameterizedType,
+        "Type isn't instance of ParameterizedType!");
 
-        ParameterizedType parameterizedType = (ParameterizedType) type;
-        Type ownerType = parameterizedType.getOwnerType();
-        Type resolvedOwnerType = ContextualTypes.resolveContextually(context, ownerType);
-        boolean changed = resolvedOwnerType != ownerType;
+    ParameterizedType parameterizedType = (ParameterizedType) type;
+    Type ownerType = parameterizedType.getOwnerType();
+    Type resolvedOwnerType = ContextualTypes.resolveContextually(context, ownerType);
+    boolean changed = resolvedOwnerType != ownerType;
 
-        Type[] actualTypeArgs = parameterizedType.getActualTypeArguments();
+    Type[] actualTypeArgs = parameterizedType.getActualTypeArguments();
 
-        for (int i = 0; i < actualTypeArgs.length; i++) {
+    for (int i = 0; i < actualTypeArgs.length; i++) {
 
-            Type argument = actualTypeArgs[i];
-            Type resolvedTypeArgument = ContextualTypes.resolveContextually(context, argument);
+      Type argument = actualTypeArgs[i];
+      Type resolvedTypeArgument = ContextualTypes.resolveContextually(context, argument);
 
-            if (resolvedTypeArgument == argument) {
-                continue;
-            }
+      if (resolvedTypeArgument == argument) {
+        continue;
+      }
 
-            if (!changed) {
-                actualTypeArgs = actualTypeArgs.clone();
-                changed = true;
-            }
+      if (!changed) {
+        actualTypeArgs = actualTypeArgs.clone();
+        changed = true;
+      }
 
-            actualTypeArgs[i] = resolvedTypeArgument;
-
-        }
-
-        if (changed) {
-            return Types.parameterizedTypeOf(resolvedOwnerType, parameterizedType.getRawType(), actualTypeArgs);
-        }
-
-        return parameterizedType;
+      actualTypeArgs[i] = resolvedTypeArgument;
 
     }
+
+    if (changed) {
+      return Types.parameterizedTypeOf(resolvedOwnerType, parameterizedType.getRawType(), actualTypeArgs);
+    }
+
+    return parameterizedType;
+
+  }
 
 }
