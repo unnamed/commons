@@ -36,3 +36,23 @@ public class Foo<T> { // GenericDeclaration
 ```
 Here, the `list` cannot be completed if there isn't a GenericDeclaration.
 `TypeReference`, `Types` and `ContextualTypes` helps you with this.
+
+## Dependency
+You can download the JAR in the repository releases, also you can
+just add the dependency to your `pom.xml`
+
+Repository:
+```xml
+<repository>
+    <id>unnamed-releases</id>
+    <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+</repository>
+```
+Dependency:
+```xml
+<dependency>
+    <groupId>team.unnamed.common</groupId>
+    <artifactId>reflect</artifactId>
+    <version>VERSION</version>
+</dependency>
+```
