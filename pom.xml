@@ -12,11 +12,13 @@
     <distributionManagement>
         <repository>
             <id>unnamed-releases</id>
-            <name>Unnamed Releases</name>
-            <url>https://repo.unnamed.team/repository/unnamed-releases</url>
+            <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>unnamed-snapshots</id>
+            <url>https://repo.unnamed.team/repository/unnamed-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
