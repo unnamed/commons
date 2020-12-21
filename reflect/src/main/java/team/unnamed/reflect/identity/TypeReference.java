@@ -1,13 +1,13 @@
 package team.unnamed.reflect.identity;
 
-import team.unnamed.reflect.identity.resolve.ContextualTypes;
 import team.unnamed.validate.Validate;
 
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Map;
 
-public class TypeReference<T> {
+public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types.CompositeType {
 
   private final Class<? super T> rawType;
   private final Type type;
@@ -22,22 +22,52 @@ public class TypeReference<T> {
 
     ParameterizedType parameterized = (ParameterizedType) superClass;
 
-    this.type = Types.wrap(parameterized.getActualTypeArguments()[0]);
+    this.type = Types.compose(parameterized.getActualTypeArguments()[0]);
     this.rawType = (Class<? super T>) Types.getRawType(type);
+    super.components.add(this.type);
   }
 
   @SuppressWarnings("unchecked")
-  public TypeReference(Type type) {
+  TypeReference(Type type) {
     Validate.notNull(type);
-    this.type = Types.wrap(type);
+    this.type = Types.compose(type);
     this.rawType = (Class<? super T>) Types.getRawType(this.type);
+    super.components.add(this.type);
   }
 
-  private TypeReference(Type type, Class<? super T> rawType) {
+  @SuppressWarnings("unchecked")
+  TypeReference(Type type, Class<? super T> rawType) {
     Validate.notNull(type, "type");
     Validate.notNull(rawType, "rawType");
-    this.type = type;
-    this.rawType = rawType;
+    this.type = Types.compose(type);
+    this.rawType = (Class<? super T>) Types.getRawType(rawType); // convert primitives to wrapper types
+    super.components.add(this.type);
+  }
+
+  public final TypeReference<?> getFieldType(Field field) {
+    Validate.notNull(field, "field");
+    Validate.argument(
+        field.getDeclaringClass().isAssignableFrom(rawType),
+        "Field '%s' isn't present in any super-type of '%s'",
+        field.getName(),
+        rawType
+    );
+    Type resolvedType = CompositeTypeReflector.resolveContextually(
+        this, field.getGenericType()
+    );
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    TypeReference fieldType = new TypeReference(resolvedType, field.getType());
+    return fieldType;
+  }
+
+  /**
+   * Unsafe method, type must be the type of a member of this type,
+   * else, it throws a {@link IllegalStateException}
+   */
+  public final TypeReference<?> resolve(Type type) {
+    Validate.notNull(type, "type");
+    type = CompositeTypeReflector.resolveContextually(this, type);
+    return new TypeReference<>(type);
   }
 
   public final Class<? super T> getRawType() {
@@ -49,69 +79,15 @@ public class TypeReference<T> {
   }
 
   /**
-   * Resolves the field fully-specified type.
-   *
-   * @param field The field
-   * @return The resolved type
-   * @throws IllegalArgumentException If the field isn't present
-   *                                  in this class or any superclass
-   */
-  public final TypeReference<?> getFieldType(Field field) {
-
-    Validate.notNull(field, "field");
-    Validate.argument(field.getDeclaringClass().isAssignableFrom(rawType),
-        field.getName() + " isn't defined by " + toString());
-
-    Type fieldType = ContextualTypes.resolveContextually(
-        this, field.getGenericType()
-    );
-
-    return new TypeReference<>(fieldType);
-  }
-
-  /**
-   * Resolves all the parameter types of the specified
-   * method or constructor.
-   *
-   * @param member The method or constructor.
-   * @return The resolved types
-   * @throws IllegalArgumentException If the member isn't
-   *                                  defined by this class or any superclass.
-   */
-  public final List<TypeReference<?>> getParameters(Member member) {
-
-    Validate.argument(member instanceof Method || member instanceof Constructor,
-        "Not a method or a constructor: " + member.getName());
-    Validate.argument(member.getDeclaringClass().isAssignableFrom(rawType),
-        member.getName() + " isn't defined by " + toString());
-
-    Executable executable = (Executable) member;
-    List<TypeReference<?>> parameters = new ArrayList<>();
-
-    for (Type genericParameterType : executable.getGenericParameterTypes()) {
-      parameters.add(new TypeReference<>(genericParameterType));
-    }
-
-    return parameters;
-  }
-
-  public final TypeReference<?> getReturnType(Method method) {
-
-    Validate.notNull(method, "method");
-    Validate.argument(method.getDeclaringClass().isAssignableFrom(rawType),
-        method.getName() + " isn't defined by " + toString());
-
-    return new TypeReference<>(method.getGenericReturnType());
-  }
-
-  /**
    * Removes the reference for the upper class. For
    * anonymous classes. If you store a {@link TypeReference}
    * in cache, you should execute this method before.
    *
    * @return The type reference.
    */
-  public final TypeReference<T> canonicalize() {
+  public final TypeReference<T> defer() {
+    // This object isn't an instance of
+    // an anonymous class
     if (getClass() == TypeReference.class) {
       return this;
     } else {
@@ -126,20 +102,15 @@ public class TypeReference<T> {
 
   @Override
   public final boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof TypeReference<?>)) {
-      return false;
-    }
-
+    if (o == this) return true;
+    if (!(o instanceof TypeReference<?>)) return false;
     TypeReference<?> other = (TypeReference<?>) o;
-    return Types.typeEquals(type, other.type);
+    return type.equals(other.type);
   }
 
   @Override
   public final String toString() {
-    return Types.asString(type);
+    return Types.getTypeName(type);
   }
 
   @Override
@@ -156,9 +127,13 @@ public class TypeReference<T> {
     return new TypeReference<>(type);
   }
 
-  public static TypeReference<?> of(Type rawType, Type... typeArguments) {
+  public static <T> TypeReference<T> of(Class<?> rawType, Type... typeArguments) {
     Validate.notNull(rawType);
-    return of(new ParameterizedTypeReference(null, rawType, typeArguments));
+    return of(Types.parameterizedTypeOf(null, rawType, typeArguments));
+  }
+
+  public static <K, V> TypeReference<Map<K, V>> mapTypeOf(TypeReference<K> key, TypeReference<V> value) {
+    return of(Map.class, key.getType(), value.getType());
   }
 
 }
