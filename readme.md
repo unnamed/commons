@@ -1,4 +1,4 @@
-# Unnamed Commons [![Build Status](https://travis-ci.com/unnamed/commons.svg?branch=master)](https://travis-ci.com/unnamed/commons)
+# Unnamed Commons ![Build Status](https://img.shields.io/github/workflow/status/yusshu/trew/build/master)
 
 Collection of public util and lightweight libraries of Unnamed Development Team. Actually, there're only 4 modules:
 
