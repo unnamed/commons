@@ -11,4 +11,4 @@ Collection of public util and lightweight libraries of Unnamed Development Team.
 - [Functional](https://github.com/unnamed/commons/tree/master/functional) for programming with a functional-style, using
   Java 8 lambda functional interfaces, lambda method references
 
-These small but useful libraries are used in various other libraries in our organization.
+Various other libraries in our organization use these small but useful libraries 
