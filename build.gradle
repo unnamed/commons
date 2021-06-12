@@ -1,0 +1,6 @@
+subprojects {
+
+	group = System.getenv("group")
+	version = System.getenv("version")
+
+}

@@ -1,3 +1,13 @@
+# editor files
 .idea
 *.iml
-target
+
+# gradle files
+/.gradle/
+
+# build dirs
+/build/
+/error/build/
+/functional/build/
+/reflect/build/
+/validation/build/
