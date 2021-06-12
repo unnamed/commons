@@ -1,12 +1,3 @@
-plugins {
-	id "java-library"
-}
-
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
 dependencies {
 	api project(":commons-validation")
 

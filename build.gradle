@@ -1,6 +1,31 @@
 subprojects {
 
-	group = System.getenv("group")
-	version = System.getenv("version")
+	apply plugin: "java-library"
+	apply plugin: "maven-publish"
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+
+	publishing {
+		repositories {
+			maven {
+				url = project.version.toString().endsWith("-SNAPSHOT")
+						? project.properties["snapshotRepository"]
+						: project.properties["releaseRepository"]
+
+				credentials {
+					it.username = project.properties["UNNAMED_REPO_USER"] ?: System.getenv("REPO_USER")
+					it.password = project.properties["UNNAMED_REPO_PASSWORD"] ?: System.getenv("REPO_PASSWORD")
+				}
+			}
+		}
+		publications {
+			maven(MavenPublication) {
+				from components.java
+			}
+		}
+	}
 
 }
