@@ -21,9 +21,9 @@ jobs:
         env:
           REPO_USER: '${{ secrets.REPO_USER }}'
           REPO_PASSWORD: '${{ secrets.REPO_PASSWORD }}'
-      - name: 'generate javadoc'
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        run: 'push-javadocs.sh'
-        shell: bash
-        env:
-          ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'
+#      - name: 'generate javadoc'
+#        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+#        run: 'push-javadocs.sh'
+#        shell: bash
+#        env:
+#          ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'
