@@ -43,28 +43,6 @@ package team.unnamed.validate;
  * this.title = title;
  * }
  * </code>
- * <p>
- * Example with {@link Validate} and {@link Filters}:
- * <code>
- * public void setPages(String[] pages) {
- * Validate.argument(Filters.all(pages, page -> page.length() < 500));
- * this.pages = pages;
- * }
- * </code>
- * Example without {@link Validate} nor {@link Filters}:
- * <code>
- * public void setPages(String[] pages) {
- * if (pages == null) {
- * throw new NullPointerException("pages cannot be null");
- * }
- * for (String page : pages) {
- * if (page.length > 500) {
- * throw new IllegalArgumentException("invalid page length");
- * }
- * }
- * this.pages = pages;
- * }
- * </code>
  */
 public final class Validate {
 
@@ -86,7 +64,7 @@ public final class Validate {
 	 * @return The object, never null
 	 * @throws NullPointerException if object is null
 	 */
-	public static <T> T notNull(T object, String message, Object... parameters) {
+	public static <T> T isNotNull(T object, String message, Object... parameters) {
 		if (object == null) {
 			throw new NullPointerException(String.format(message, parameters));
 		} else {
@@ -102,8 +80,8 @@ public final class Validate {
 	 * @return The object, never null
 	 * @throws NullPointerException if object is null
 	 */
-	public static <T> T notNull(T object) {
-		return notNull(object, null);
+	public static <T> T isNotNull(T object) {
+		return isNotNull(object, null);
 	}
 
 	/**
@@ -117,7 +95,7 @@ public final class Validate {
 	 *                   using {@link String#format}.
 	 * @throws IllegalStateException If expression is false
 	 */
-	public static void state(boolean expression, String message, Object... parameters) {
+	public static void isState(boolean expression, String message, Object... parameters) {
 		if (!expression) {
 			throw new IllegalStateException(String.format(message, parameters));
 		}
@@ -129,8 +107,8 @@ public final class Validate {
 	 * @param expression The checked expression
 	 * @throws IllegalStateException If expression is false
 	 */
-	public static void state(boolean expression) {
-		state(expression, null);
+	public static void isState(boolean expression) {
+		isState(expression, null);
 	}
 
 	/**
@@ -144,7 +122,7 @@ public final class Validate {
 	 *                   using {@link String#format}.
 	 * @throws IllegalArgumentException If expression is false
 	 */
-	public static void argument(boolean expression, String message, Object... parameters) {
+	public static void isTrue(boolean expression, String message, Object... parameters) {
 		if (!expression) {
 			throw new IllegalArgumentException(String.format(message, parameters));
 		}
@@ -156,8 +134,8 @@ public final class Validate {
 	 * @param expression The checked expression
 	 * @throws IllegalArgumentException If expression is false
 	 */
-	public static void argument(boolean expression) {
-		argument(expression, null);
+	public static void isTrue(boolean expression) {
+		isTrue(expression, null);
 	}
 
 	/**
@@ -175,7 +153,7 @@ public final class Validate {
 	 * @throws NullPointerException     if the string is null
 	 * @throws IllegalArgumentException If the string is empty
 	 */
-	public static String notEmpty(String string, String message, Object... parameters) {
+	public static String isNotEmpty(String string, String message, Object... parameters) {
 		if (string == null) {
 			throw new NullPointerException(String.format(message, parameters));
 		} else if (string.isEmpty()) {
@@ -195,8 +173,8 @@ public final class Validate {
 	 * @throws NullPointerException     if the string is null
 	 * @throws IllegalArgumentException If the string is empty
 	 */
-	public static String notEmpty(String string) {
-		return notEmpty(string, null);
+	public static String isNotEmpty(String string) {
+		return isNotEmpty(string, null);
 	}
 
 }

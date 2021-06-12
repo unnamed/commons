@@ -17,7 +17,7 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 
 		Type superClass = getClass().getGenericSuperclass();
 
-		Validate.state(superClass instanceof ParameterizedType,
+		Validate.isState(superClass instanceof ParameterizedType,
 				"Invalid TypeReference creation.");
 
 		ParameterizedType parameterized = (ParameterizedType) superClass;
@@ -29,7 +29,7 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 
 	@SuppressWarnings("unchecked")
 	TypeReference(Type type) {
-		Validate.notNull(type);
+		Validate.isNotNull(type);
 		this.type = Types.compose(type);
 		this.rawType = (Class<? super T>) Types.getRawType(this.type);
 		super.components.add(this.type);
@@ -37,8 +37,8 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 
 	@SuppressWarnings("unchecked")
 	TypeReference(Type type, Class<? super T> rawType) {
-		Validate.notNull(type, "type");
-		Validate.notNull(rawType, "rawType");
+		Validate.isNotNull(type, "type");
+		Validate.isNotNull(rawType, "rawType");
 		this.type = Types.compose(type);
 		this.rawType = (Class<? super T>) Types.getRawType(rawType); // convert primitives to wrapper types
 		super.components.add(this.type);
@@ -49,7 +49,7 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 	}
 
 	public static <T> TypeReference<T> of(Class<?> rawType, Type... typeArguments) {
-		Validate.notNull(rawType);
+		Validate.isNotNull(rawType);
 		return of(Types.parameterizedTypeOf(null, rawType, typeArguments));
 	}
 
@@ -58,8 +58,8 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 	}
 
 	public final TypeReference<?> getFieldType(Field field) {
-		Validate.notNull(field, "field");
-		Validate.argument(
+		Validate.isNotNull(field, "field");
+		Validate.isTrue(
 				field.getDeclaringClass().isAssignableFrom(rawType),
 				"Field '%s' isn't present in any super-type of '%s'",
 				field.getName(),
@@ -78,7 +78,7 @@ public class TypeReference<T> extends Types.AbstractTypeWrapper implements Types
 	 * else, it throws a {@link IllegalStateException}
 	 */
 	public final TypeReference<?> resolve(Type type) {
-		Validate.notNull(type, "type");
+		Validate.isNotNull(type, "type");
 		type = CompositeTypeReflector.resolveContextually(this, type);
 		return new TypeReference<>(type);
 	}

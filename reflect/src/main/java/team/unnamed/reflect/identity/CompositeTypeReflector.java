@@ -33,9 +33,9 @@ final class CompositeTypeReflector {
 
 	private static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
 
-		Validate.notNull(type, "type");
-		Validate.notNull(rawType, "rawType");
-		Validate.notNull(resolvingType, "resolvingType");
+		Validate.isNotNull(type, "type");
+		Validate.isNotNull(rawType, "rawType");
+		Validate.isNotNull(resolvingType, "resolvingType");
 
 		if (resolvingType == rawType) {
 			return type;
@@ -84,7 +84,7 @@ final class CompositeTypeReflector {
 	 */
 	static Type resolveContextually(TypeReference<?> context, Type type) {
 
-		Validate.notNull(context);
+		Validate.isNotNull(context);
 
 		for (@SuppressWarnings("rawtypes")
 				TypeReflector reflector : REFLECTORS) {
@@ -243,7 +243,7 @@ final class CompositeTypeReflector {
 			// Here the type has changed,
 			// so we create a new ParameterizedType
 			Type rawType = type.getRawType();
-			Validate.state(rawType instanceof Class, "Raw type isn't a class!");
+			Validate.isState(rawType instanceof Class, "Raw type isn't a class!");
 			return Types.parameterizedTypeOf(
 					resolvedOwnerType,
 					(Class<?>) rawType,

@@ -49,7 +49,7 @@ public final class Types {
 
 	/** Adds the specified {@code packageName} to the list of omitted packages */
 	public static void omitPackage(String packageName) {
-		Validate.notEmpty(packageName, "packageName");
+		Validate.isNotEmpty(packageName, "packageName");
 		OMITTED_PACKAGES.add(packageName);
 	}
 
@@ -93,7 +93,7 @@ public final class Types {
 			Type rawType = prototype.getRawType();
 			// rawType is always a Class, but
 			// I check because yes.
-			Validate.state(rawType instanceof Class, "Raw type isn't a class!");
+			Validate.isState(rawType instanceof Class, "Raw type isn't a class!");
 			return parameterizedTypeOf(
 					prototype.getOwnerType(),
 					(Class<?>) rawType,
@@ -138,7 +138,7 @@ public final class Types {
 			// a Type and not a Class, all its implementations
 			// return a Class and not a Type.
 			// Why the abstraction returns Type?
-			Validate.state(typeRaw instanceof Class, "Raw type isn't a Class!");
+			Validate.isState(typeRaw instanceof Class, "Raw type isn't a Class!");
 			rawType = (Class<?>) typeRaw;
 		} else if (type instanceof GenericArrayType) {
 			Type componentType = ((GenericArrayType) type)
@@ -157,7 +157,7 @@ public final class Types {
 			rawType = getRawType(upperBound);
 		}
 
-		Validate.argument(rawType != null, "Cannot get raw type of '%s'", type);
+		Validate.isTrue(rawType != null, "Cannot get raw type of '%s'", type);
 		return toWrapperIfPrimitive(rawType);
 	}
 
@@ -323,7 +323,7 @@ public final class Types {
 		private final Type componentType;
 
 		private GenericArrayTypeWrapper(Type componentType) {
-			Validate.notNull(componentType, "componentType");
+			Validate.isNotNull(componentType, "componentType");
 			this.componentType = componentType;
 			super.components.add(this.componentType);
 		}
@@ -477,9 +477,9 @@ public final class Types {
 		 */
 		private WildcardTypeWrapper(Type[] upperBounds, Type[] lowerBounds) {
 
-			Validate.argument(upperBounds.length == 1,
+			Validate.isTrue(upperBounds.length == 1,
 					"The wildcard must have 1 upper bound. For unbound wildcards, just use Object");
-			Validate.argument(lowerBounds.length < 2,
+			Validate.isTrue(lowerBounds.length < 2,
 					"The wildcard must have at most 1 lower bound");
 
 			if (lowerBounds.length == 1) {

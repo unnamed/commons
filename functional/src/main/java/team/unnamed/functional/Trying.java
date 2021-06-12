@@ -16,7 +16,7 @@ public class Trying<T> {
 	private final Object failCause;
 
 	private Trying(Object value, Object failCause) {
-		Validate.argument(value == null ^ failCause == null,
+		Validate.isTrue(value == null ^ failCause == null,
 				"The response cannot be created if it has not failed and " +
 						"has not completed, or if it has failed and at the same time " +
 						"the operation has completed successfully,");
@@ -38,7 +38,7 @@ public class Trying<T> {
 	 * @return The operation result
 	 */
 	public static <T> Trying<T> of(Supplier<? extends T> supplier) {
-		Validate.notNull(supplier, "Supplier can not be null");
+		Validate.isNotNull(supplier, "Supplier can not be null");
 		try {
 			return success(supplier.get());
 		} catch (Throwable throwable) {
@@ -111,7 +111,7 @@ public class Trying<T> {
 	}
 
 	public Trying<? super T> orElse(Trying<? super T> other) {
-		Validate.notNull(other, "Other cannot be null");
+		Validate.isNotNull(other, "Other cannot be null");
 		return isSuccess() ? this : other;
 	}
 
@@ -124,7 +124,7 @@ public class Trying<T> {
 	 */
 	public Trying<T> ifFailure(Consumer<? super Throwable> action) {
 
-		Validate.notNull(action, "Action cannot be null");
+		Validate.isNotNull(action, "Action cannot be null");
 		Optional<Throwable> cause = getIfFailure();
 
 		if (isFailure()) {
@@ -143,7 +143,7 @@ public class Trying<T> {
 	 */
 	public Trying<T> ifSuccess(Consumer<? super T> action) {
 
-		Validate.notNull(action, "Action cannot be null");
+		Validate.isNotNull(action, "Action cannot be null");
 
 		if (isSuccess()) {
 			action.accept(getValueOrNull());

@@ -22,7 +22,7 @@ public final class Errors {
 	 */
 	public static String getStackTrace(Throwable throwable) {
 
-		Validate.notNull(throwable, "throwable");
+		Validate.isNotNull(throwable, "throwable");
 
 		StringWriter writer = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(writer);

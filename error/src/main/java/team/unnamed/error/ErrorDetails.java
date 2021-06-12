@@ -28,8 +28,8 @@ public final class ErrorDetails {
 	 * @param messages The list of error messages
 	 */
 	public ErrorDetails(String heading, Collection<String> messages) {
-		Validate.notNull(messages, "messages");
-		this.heading = Validate.notNull(heading, "heading");
+		Validate.isNotNull(messages, "messages");
+		this.heading = Validate.isNotNull(heading, "heading");
 		this.messages = new ArrayList<>(messages);
 	}
 
@@ -39,7 +39,7 @@ public final class ErrorDetails {
 	 * @param heading The heading
 	 */
 	public ErrorDetails(String heading) {
-		this.heading = Validate.notNull(heading, "heading");
+		this.heading = Validate.isNotNull(heading, "heading");
 		this.messages = new ArrayList<>();
 	}
 
@@ -53,7 +53,7 @@ public final class ErrorDetails {
 	 * @return The merged details
 	 */
 	public synchronized ErrorDetails merge(ErrorDetails details) {
-		Validate.notNull(details, "details");
+		Validate.isNotNull(details, "details");
 		this.messages.addAll(details.messages);
 		return this;
 	}
@@ -77,7 +77,7 @@ public final class ErrorDetails {
 	 * @return This error details, for a fluent-api
 	 */
 	public synchronized ErrorDetails add(String message) {
-		this.messages.add(Validate.notEmpty(message));
+		this.messages.add(Validate.isNotEmpty(message));
 		return this;
 	}
 

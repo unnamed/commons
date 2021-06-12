@@ -26,8 +26,8 @@ public final class Maps {
 	 */
 	public static <K, V, V2> Map<K, V2> mapValues(Map<K, V> map,
 																								Function<? super V, ? extends V2> mapFunction) {
-		Validate.notNull(map, "map");
-		Validate.notNull(mapFunction, "mapFunction");
+		Validate.isNotNull(map, "map");
+		Validate.isNotNull(mapFunction, "mapFunction");
 
 		Map<K, V2> newMap = new HashMap<>();
 		map.forEach((key, value) ->
@@ -46,8 +46,8 @@ public final class Maps {
 	 * @return The same map
 	 */
 	public static <K, V> Map<K, V> removeKeyIf(Map<K, V> map, Predicate<? super K> keyPredicate) {
-		Validate.notNull(map, "map");
-		Validate.notNull(keyPredicate, "keyPredicate");
+		Validate.isNotNull(map, "map");
+		Validate.isNotNull(keyPredicate, "keyPredicate");
 
 		map.entrySet().removeIf(entry ->
 				keyPredicate.test(entry.getKey()));
@@ -64,8 +64,8 @@ public final class Maps {
 	 * @return The same map
 	 */
 	public static <K, V> Map<K, V> removeValueIf(Map<K, V> map, Predicate<? super V> valuePredicate) {
-		Validate.notNull(map, "map");
-		Validate.notNull(valuePredicate, "valuePredicate");
+		Validate.isNotNull(map, "map");
+		Validate.isNotNull(valuePredicate, "valuePredicate");
 
 		map.entrySet().removeIf(entry ->
 				valuePredicate.test(entry.getValue()));
