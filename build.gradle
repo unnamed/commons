@@ -1,5 +1,4 @@
 subprojects {
-
 	apply plugin: "java-library"
 	apply plugin: "maven-publish"
 
@@ -8,30 +7,39 @@ subprojects {
 		mavenCentral()
 	}
 
-	publishing {
-		repositories {
-			maven {
-				url = project.version.toString().endsWith("-SNAPSHOT")
-						? project.properties["snapshotRepository"]
-						: project.properties["releaseRepository"]
+    publishing {
+        repositories {
+            maven {
+                def snapshot = version.toString().endsWith("-SNAPSHOT")
+                def typeName = snapshot ? 'snapshots' : 'releases'
+                def repoUrl = 'https://repo.unnamed.team/repository/unnamed-' + typeName
 
-				credentials {
-					it.username = project.properties["UNNAMED_REPO_USER"] ?: System.getenv("REPO_USER")
-					it.password = project.properties["UNNAMED_REPO_PASSWORD"] ?: System.getenv("REPO_PASSWORD")
-				}
-			}
-		}
-		publications {
-			maven(MavenPublication) {
-				from components.java
-			}
-		}
-	}
+                name = snapshot ? 'unnamed-snapshots' : 'unnamed-releases'
+                url = repoUrl
+                credentials {
+                    username = System.getenv('REPO_USER')
+                    password = System.getenv('REPO_PASSWORD')
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+
+//    For install the project into ur .m2
+
+//    publications {
+//      maven(MavenPublication) {
+//        from components.java
+//      }
+//    }
+    }
 
 	javadoc {
 		options {
 			links "https://docs.oracle.com/javase/8/docs/api/"
 		}
 	}
-
 }
