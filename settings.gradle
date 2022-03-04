@@ -1,7 +1,0 @@
-rootProject.name = 'commons'
-
-// Include and pre-pend 'commons-' to every subproject
-['error', 'functional', 'reflect', 'validation', 'bukkit'].forEach {
-	include it
-	findProject(":$it")?.name = "commons-$it"
-}
