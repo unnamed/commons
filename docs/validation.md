@@ -1,7 +1,6 @@
 # Validation
 
-Library for create fail-fast (If an entered argument is invalid, the method must not respond as if it were a valid
-argument) APIs, shorten code, etc.
+Library for create fail-fast APIs and shorten code
 
 ## Examples
 
@@ -28,22 +27,20 @@ Using this library:
 
 ```java
 public void setPages(List<String> pages) {
-
     Validate.state(this.pages == null, "Pages is already defined!");
     Validate.notNull(pages, "Pages cannot be null");
     Validate.argument(Filters.all(page -> page.length() < 500), "A page cannot contain more than 500 characters");
-
     this.pages = pages;
 }
 ```
 
 ## Why fail-fast?
 
-Fail-fast methodology is very important for debugging. Methods that fail quickly in case of providing an invalid
-argument make it easier to search for errors.
+Fail-fast methodology is very helpful for debugging. Functions that fail quickly
+in case of providing invalid input make it easier to search for errors
 
-This library helps you create fail-fast methods without the need to write so much code. In addition, it helps you easily
-create messages for errors
+This library helps you create fail-fast functions without the need to write so
+much code. In addition, it helps you easily create messages for errors
 
 For example, in a non-fail-fast method:
 
@@ -66,7 +63,7 @@ log(formattedMessage.replace('.', '/')); // NullPointerException!
 ```
 
 In this case, the error was not reported from the beginning, it was reported later. In this case, you would be seeing
-the exception's stacktrace, checking on which line it failed, which variable could be null, checking on which line this
+the exception's stack-trace, checking on which line it failed, which variable could be null, checking on which line this
 variable was created, etc.
 
 With a fail-fast method:
@@ -87,22 +84,21 @@ String formattedMessage = format(message); // in case of null, fails
 log(formattedMessage.replace('.', '/'));
 ```
 
-The method fails instantly on passing it a null reference, it fails with a descriptive message about what failed. The
-error is easily found.
+The method fails instantly on passing it a null reference, it fails with a
+descriptive message about what failed. The error is easily found
 
-This was just a case of nullability, but there are more cases, like checking states, arguments, etc.
-Check [this StackOverflow question and answers](https://stackoverflow.com/questions/271526) for nullability cases.
 
 ## Dependency
 
-You can download the JAR in the repository releases, also you can just add the dependency to your `pom.xml`
+You can download the JAR in the repository releases, or add the dependency to
+Gradle build-script or your Maven project object model
 
 Repository:
 
 ```xml
 <repository>
-    <id>unnamed-releases</id>
-    <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+    <id>unnamed-public</id>
+    <url>https://repo.unnamed.team/repository/unnamed-public/</url>
 </repository>
 ```
 
@@ -110,8 +106,8 @@ Dependency:
 
 ```xml
 <dependency>
-    <groupId>team.unnamed.common</groupId>
-    <artifactId>validation</artifactId>
+    <groupId>team.unnamed</groupId>
+    <artifactId>commons-validation</artifactId>
     <version>VERSION</version>
 </dependency>
 ```

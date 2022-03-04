@@ -1,14 +1,9 @@
-# Unnamed Commons ![Build Status](https://img.shields.io/github/workflow/status/yusshu/trew/build/master)
+# commons
+![Build Status](https://img.shields.io/github/workflow/status/unnamed/commons/build/master)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
+[![Discord](https://img.shields.io/discord/683899335405994062)](https://discord.gg/xbba2fy)
 
-Collection of public util and lightweight libraries of Unnamed Development Team. Actually, there're only 4 modules:
+A small collection of public, util and lightweight libraries
 
-- [Reflection](https://github.com/unnamed/commons/tree/master/reflect) for easy handling of types and generic types
-  using [TypeReference](https://github.com/unnamed/commons/blob/master/reflect/src/main/java/team/unnamed/reflect/identity/TypeReference.java)
-- [Validation](https://github.com/unnamed/commons/tree/master/validation) for creating fail-fast (If an entered argument
-  is invalid, the method must not respond as if it were a valid argument) APIs, shorten code, etc.
-- [Error](https://github.com/unnamed/commons/tree/master/error) for multiple error logging, track all errors, once all
-  have been collected, warn about all, not just the first one
-- [Functional](https://github.com/unnamed/commons/tree/master/functional) for programming with a functional-style, using
-  Java 8 lambda functional interfaces, lambda method references
-
-Various other libraries in our organization use these small but useful libraries 
+Check the [documentation](https://unnamed.team/docs/commons) for
+installation and usage information for this project

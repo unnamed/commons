@@ -1,6 +1,6 @@
 # Error
 
-Library for multiple-error handling and complete error report.
+Library for multiple-error handling and complete error reports
 
 ## Examples
 
@@ -16,8 +16,9 @@ for (Listener listener : getListenersForEvent(event)) {
 }
 ```
 
-This only reports the first error found, bad if we want to fix all the errors without having to compile, test, find
-errors, fix and so on with all the errors, because it will be reported one at a time.
+This only reports the first error found, bad if we want to fix all the
+errors without having to compile, test, find errors, fix and so on with
+all the errors, because it will be reported one at a time
 
 But with this library:
 
@@ -36,7 +37,8 @@ for (Listener listener : getListenersForEvent(event)) {
 throw errors.toException(EventException::new);
 ```
 
-This reports all errors, not only the first. It also prints a pretty message with all the stack traces in this format:
+This reports all errors, not only the first. It also prints a pretty message
+with all the stack traces in this format:
 
 ```cs
 Exception in thread <thread> <package>.EventException: Cannot pass event <eventName>
@@ -57,14 +59,15 @@ All stack-traces enumerated and formatted
 
 ## Dependency
 
-You can download the JAR in the repository releases, also you can just add the dependency to your `pom.xml`
+You can download the JAR in the repository releases, or add the dependency to
+Gradle build-script or your Maven project object model
 
 Repository:
 
 ```xml
 <repository>
-    <id>unnamed-releases</id>
-    <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+    <id>unnamed-public</id>
+    <url>https://repo.unnamed.team/repository/unnamed-public/</url>
 </repository>
 ```
 
@@ -72,8 +75,8 @@ Dependency:
 
 ```xml
 <dependency>
-    <groupId>team.unnamed.common</groupId>
-    <artifactId>error</artifactId>
+    <groupId>team.unnamed</groupId>
+    <artifactId>commons-error</artifactId>
     <version>VERSION</version>
 </dependency>
 ```
