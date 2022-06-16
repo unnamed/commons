@@ -13,19 +13,18 @@ subprojects {
         }
     }
 
+    val repositoryName: String by project
+    val snapshotRepository: String by project
+    val releaseRepository: String by project
+
     configure<PublishingExtension> {
         repositories {
             maven {
                 val snapshot = version.toString().endsWith("-SNAPSHOT")
-                val typeName = if (snapshot) { "snapshots" } else { "releases" }
-                val repoName = "unnamed-$typeName"
 
-                name = repoName
-                url = uri("https://repo.unnamed.team/repository/$repoName")
-                credentials {
-                    username = System.getenv("REPO_USER")
-                    password = System.getenv("REPO_PASSWORD")
-                }
+                name = repositoryName
+                url = if (snapshot) { uri(snapshotRepository) } else { uri(releaseRepository) }
+                credentials(PasswordCredentials::class)
             }
         }
         publications {
