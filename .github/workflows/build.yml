@@ -16,7 +16,7 @@ jobs:
             - name: 'gradle build'
               run: './gradlew build'
             - name: 'gradle publish'
-              if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+              if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
               run: './gradlew publish'
               env:
                   ORG_GRADLE_PROJECT_unnamedRepositoryUsername: '${{ secrets.REPO_USER }}'
